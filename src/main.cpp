@@ -1,5 +1,4 @@
 #include <Arduino.h>
-
 #include <esp32_smartdisplay.h>
 #include <ui/ui.h>
 
