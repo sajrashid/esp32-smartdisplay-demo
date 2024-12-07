@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <esp32_smartdisplay.h>
 #include <ui/ui.h>
+// Add json reader and writer
+#include <ArduinoJson.h>
 
 void OnAddOneClicked(lv_event_t *e)
 {
@@ -23,6 +25,42 @@ void setup()
 #endif
     Serial.begin(115200);
     Serial.setDebugOutput(true);
+  while (!Serial)
+    continue;
+
+  // Allocate the JSON document
+  JsonDocument doc;
+
+  // Add values in the document
+  doc["sensor"] = "gps";
+  doc["time"] = 1351824120;
+
+  // Add an array
+  JsonArray data = doc["data"].to<JsonArray>();
+  data.add(48.756080);
+  data.add(2.302038);
+
+  // Generate the minified JSON and send it to the Serial port
+  serializeJson(doc, Serial);
+  // The above line prints:
+  // {"sensor":"gps","time":1351824120,"data":[48.756080,2.302038]}
+
+  // Start a new line
+  Serial.println();
+
+  // Generate the prettified JSON and send it to the Serial port
+  serializeJsonPretty(doc, Serial);
+  // The above line prints:
+  // {
+  //   "sensor": "gps",
+  //   "time": 1351824120,
+  //   "data": [
+  //     48.756080,
+  //     2.302038
+  //   ]
+  // }
+
+
     log_i("Board: %s", BOARD_NAME);
     log_i("CPU: %s rev%d, CPU Freq: %d Mhz, %d core(s)", ESP.getChipModel(), ESP.getChipRevision(), getCpuFrequencyMhz(), ESP.getChipCores());
     log_i("Free heap: %d bytes", ESP.getFreeHeap());
